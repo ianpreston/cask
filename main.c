@@ -15,7 +15,7 @@
 #define clone_flags CLONE_NEWPID
 #define unshare_flags (CLONE_NEWIPC | CLONE_NEWNET | CLONE_NEWNS | CLONE_NEWUTS)
 
-int setup_filesystem(char *root, char *old_root)
+int setup_filesystem(char *root, char *pivot, char *pivot_abs)
 {
     // Mark the root drive as private, so changes in this namespace are not
     // propagated up to the parent namespace
@@ -32,7 +32,7 @@ int setup_filesystem(char *root, char *old_root)
     }
 
     // Use pivot_root to jail this process inside of `root`
-    if (syscall(SYS_pivot_root, root, old_root)< 0) {
+    if (syscall(SYS_pivot_root, root, pivot_abs) < 0) {
         printf("setup_filesystem(): pivot_root failed: %d\n", errno);
         return -1;
     }
@@ -44,7 +44,7 @@ int setup_filesystem(char *root, char *old_root)
 
     // Unmount the pivot point (i.e. make the host's root unreachable from
     // within the container)
-    if (umount2("/old-root", MNT_DETACH) < 0)
+    if (umount2(pivot, MNT_DETACH) < 0)
     {
         printf("setup_filesystem(): umount2(): %d\n", errno);
         return -1;
@@ -77,16 +77,17 @@ int init_proc(void *root)
 {
     // Build the path that will contain the filesystem pivot and
     // ensure it exists on disk
-    char *old_root = calloc(strlen(root) + strlen("/old-root") + 1, 1);
-    if (old_root == NULL)
+    char *pivot = "/.pivot";
+    char *pivot_abs = calloc(strlen(root) + strlen(pivot) + 1, 1);
+    if (pivot_abs == NULL)
     {
-        printf("init_proc(): malloc: %d\n", errno);
+        printf("setup_filesystem(): calloc(): %d\n", errno);
         return 1;
     }
-    strcat(old_root, root);
-    strcat(old_root, "/old-root");
+    strcat(pivot_abs, root);
+    strcat(pivot_abs, pivot);
 
-    if (mkdir(old_root, S_IRWXU | S_IRWXG) < 0)
+    if (mkdir(pivot_abs, S_IRWXU | S_IRWXG) < 0)
     {
         if (errno != EEXIST)
         {
@@ -108,7 +109,7 @@ int init_proc(void *root)
         return 1;
     }
 
-    if (setup_filesystem(root, old_root) < 0)
+    if (setup_filesystem(root, pivot, pivot_abs) < 0)
     {
         printf("init_proc(): setup_filesystem() failed\n");
         return 1;
