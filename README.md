@@ -20,7 +20,7 @@ Create an example container with Busybox
 
 Start up the container
 
-    $ sudo ./cask ./containers/example
+    $ sudo ./cask ./containers/example /busybox sh
     /# /busybox hostname
 
 
