@@ -9,7 +9,7 @@
 
 int setup_filesystem(char *root, char *pivot, char *pivot_abs)
 {
-    // Mark the root drive as private, so changes in this namespace are not
+    // Mark the root mount as private, so changes in this namespace are not
     // propagated up to the parent namespace
     if (mount("", "/", NULL, MS_PRIVATE|MS_REC, NULL) < 0)
     {
@@ -17,13 +17,15 @@ int setup_filesystem(char *root, char *pivot, char *pivot_abs)
         return -1;
     }
 
+    // Bind root to itself so we can mount it like a filesystem
     if (mount(root, root, NULL, MS_BIND|MS_REC, NULL) < 0)
     {
-        printf("setup_filesystem(): Failed to bind /subfs\n");
+        printf("setup_filesystem(): Failed to bind pivot root directory\n");
         return -1;
     }
 
-    // Use pivot_root to jail this process inside of `root`
+    // Use pivot_root to mount `root` as the root filesystem (/) within
+    // this namespace.
     if (syscall(SYS_pivot_root, root, pivot_abs) < 0) {
         printf("setup_filesystem(): pivot_root failed: %d\n", errno);
         return -1;
@@ -44,4 +46,3 @@ int setup_filesystem(char *root, char *pivot, char *pivot_abs)
 
     return 0;
 }
-
