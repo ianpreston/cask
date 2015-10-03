@@ -7,7 +7,7 @@ if test $# -lt 1; then
     exit
 fi
 
-sudo ip link del veth0
+sudo ip link del veth0 || true
 
 ip link add name veth0 type veth peer name veth1
 ip link set veth1 netns $1
