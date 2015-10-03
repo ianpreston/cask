@@ -70,7 +70,7 @@ int run_entry_point(char *entry_point, char **argv)
     return -1;
 }
 
-int spawn_init_proc(char *root, char *entry_point, char **entry_point_argv)
+int spawn_init_proc(char *root, char *pid_path, char *entry_point, char **entry_point_argv)
 {
     container_spec_t *cspec = malloc(sizeof(container_spec_t));
     cspec->root = root;
@@ -91,6 +91,15 @@ int spawn_init_proc(char *root, char *entry_point, char **entry_point_argv)
         printf("spawn_init_proc(): clone(): %d\n", errno);
         return -1;
     }
+
+    FILE *f = fopen(pid_path, "w");
+    if (f == NULL)
+    {
+        printf("spawn_init_proc(): fopen(): %d\n", errno);
+    }
+
+    fprintf(f, "%d", pid);
+    fclose(f);
 
     waitpid(pid, NULL, 0);
     return 0;
