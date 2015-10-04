@@ -1,0 +1,65 @@
+#!/usr/bin/env python
+import subprocess
+import click
+
+import libcask.container
+
+
+cont = libcask.container.Container(
+    name='Example',
+    root_path='/home/dev/cask/containers/example/',
+    pid_path='/home/dev/cask/pid/example',
+    hostname='exampl',
+    ipaddr='10.1.1.1',
+    ipaddr_host='10.1.1.2',
+    entry_point='/busybox sh /entry.sh',
+)
+
+
+@click.group()
+def group():
+    pass
+
+
+@group.command('start')
+@click.argument('container')
+def start(container):
+    cont.start() 
+
+
+@group.command('pid')
+@click.argument('container')
+def pid(container):
+    pid = cont.pid()
+    if not pid:
+        print 'Container is not running'
+        return
+    print 'Container is running with PID:', pid
+
+
+@group.command('status')
+@click.argument('container')
+def status(container):
+    if cont.status():
+        pid = cont.pid()
+        print 'Container `{name}` is running with pid {pid}'.format(name=container, pid=pid)
+    else:
+        print 'Container `{name}` is down'.format(name=container)
+
+
+@group.command('kill')
+@click.argument('container')
+def kill(container):
+    cont.kill()
+    print 'Container killed'
+
+
+@group.command('shell')
+@click.argument('container')
+def shell(container):
+    with cont.get_attachment().attach():
+        subprocess.call('sh')
+
+
+if __name__ == '__main__':
+    group()
