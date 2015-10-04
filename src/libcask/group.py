@@ -77,6 +77,8 @@ class ContainerGroup(object):
         self.containers[name] = container
         self._serialize(container)
 
+        return container
+
     def get(self, name):
         try:
             return self.containers[name]
