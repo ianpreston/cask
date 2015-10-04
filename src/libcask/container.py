@@ -77,3 +77,4 @@ class Container(object):
 
     def kill(self, sig=None):
         os.kill(self.pid(), sig or signal.SIGKILL)
+        os.unlink(self.pid_path)
