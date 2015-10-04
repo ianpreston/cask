@@ -13,12 +13,4 @@ $(TARGET): $(SRC)
 clean:
 	rm $(TARGET)
 
-container: containers/example
-
-containers/example:
-	mkdir -p containers/example
-	curl -o containers/example/busybox http://busybox.net/downloads/binaries/latest/busybox-i686
-	chmod ug+x containers/example/busybox
-
-
 .PHONY: build container clean
