@@ -18,6 +18,8 @@ elif sys.argv[1] == 'shell':
     cont.attach().run('/busybox sh')
 elif sys.argv[1] == 'kill':
     cont.kill()
+elif sys.argv[1] == 'status':
+    print 'Running' if cont.status() else 'Not running'
 elif sys.argv[1] == 'pid':
     print 'Container running with PID:', cont.pid()
 else:

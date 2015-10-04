@@ -49,6 +49,16 @@ class Container(object):
         os.makedirs(self.root_path)
         os.makedirs(os.path.dirname(self.pid_path))
 
+    def status(self):
+        pid = self.pid()
+        status_path = '/proc/{pid}/status'.format(pid=pid)
+
+        try:
+            with open(status_path, 'r') as f:
+                return True
+        except IOError:
+            return False
+
     def start(self):
         entry = self.entry_point.split(' ')
         args = ['./cask-clone', self.root_path, self.pid_path] + entry
