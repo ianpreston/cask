@@ -75,7 +75,7 @@ class Container(libcask.network.SetupNetworkMixin):
 
         self.setup_network()
 
-    def attach(self):
+    def get_attachment(self):
         return libcask.attach.Attachment(self.pid())
 
     def kill(self, sig=None):

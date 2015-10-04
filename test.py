@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 import sys; sys.path.insert(0, './src/')
+import subprocess
 import libcask.container
 
 cont = libcask.container.Container(
@@ -15,7 +16,10 @@ cont = libcask.container.Container(
 if sys.argv[1] == 'start':
     cont.start()
 elif sys.argv[1] == 'shell':
-    cont.attach().run('/busybox sh')
+    att = cont.get_attachment()
+    with cont.get_attachment().attach():
+        subprocess.call(['/busybox', 'sh'])
+
 elif sys.argv[1] == 'kill':
     cont.kill()
 elif sys.argv[1] == 'status':
