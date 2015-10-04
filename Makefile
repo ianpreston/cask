@@ -2,8 +2,8 @@ CC=gcc
 CSTD=c99
 CCFLAGS=-Wall -Werror -pedantic
 
-TARGET=cask
-SRC=$(wildcard *.c)
+TARGET=cask-clone
+SRC=$(wildcard src/cask-clone/*.c)
 
 build: $(TARGET)
 
