@@ -56,7 +56,7 @@ class Container(libcask.network.SetupNetworkMixin):
         status_path = '/proc/{pid}/status'.format(pid=pid)
 
         try:
-            with open(status_path, 'r') as f:
+            with open(status_path, 'r'):
                 return True
         except IOError:
             return False
