@@ -63,7 +63,8 @@ class Container(object):
         entry = self.entry_point.split(' ')
         args = ['./cask-clone', self.root_path, self.pid_path] + entry
 
-        proc = subprocess.Popen(args)
+        with open('/dev/null', 'rwb') as devnull:
+            proc = subprocess.Popen(args, stdin=devnull, stdout=devnull, stderr=devnull)
         print 'pid:', self.pid()
 
     def attach(self):
