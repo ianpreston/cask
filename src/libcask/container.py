@@ -1,5 +1,6 @@
 import os
 import os.path
+import time
 import signal
 import subprocess
 
@@ -64,7 +65,11 @@ class Container(object):
         args = ['./cask-clone', self.root_path, self.pid_path] + entry
 
         with open('/dev/null', 'rwb') as devnull:
-            proc = subprocess.Popen(args, stdin=devnull, stdout=devnull, stderr=devnull)
+            subprocess.Popen(args, stdin=devnull, stdout=devnull, stderr=devnull)
+
+        # TODO - Properly await existence of pidfile. This /sucks/.
+        time.sleep(1)
+
         print 'pid:', self.pid()
 
     def attach(self):
