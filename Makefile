@@ -2,15 +2,23 @@ CC=gcc
 CSTD=c99
 CCFLAGS=-Wall -Werror -pedantic
 
-TARGET=cask-clone
-SRC=$(wildcard src/cask-clone/*.c)
+BUILD_DIR=build
+CLONE_TARGET=$(BUILD_DIR)/cask-clone
+CLONE_SRC=$(wildcard src/cask-clone/*.c)
 
-build: $(TARGET)
+$(CLONE_TARGET): $(BUILD_DIR) $(CLONE_SRC)
+	$(CC) --std=$(CSTD) -o $(CLONE_TARGET) $(CLONE_SRC) $(CCFLAGS)
 
-$(TARGET): $(SRC)
-	$(CC) --std=$(CSTD) -o $(TARGET) $(SRC) $(CCFLAGS)
+libcask:
+	python setup.py install
+
+install: $(CLONE_TARGET) libcask
+	cp $(CLONE_TARGET) /usr/local/bin
+
+$(BUILD_DIR):
+	mkdir -p $(BUILD_DIR)
 
 clean:
-	rm $(TARGET)
+	rm -fr $(BUILD_DIR)
 
-.PHONY: build container clean
+.PHONY: libcask install clean
