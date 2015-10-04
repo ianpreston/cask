@@ -50,7 +50,6 @@ class Container(libcask.network.SetupNetworkMixin):
 
     def create(self):
         os.makedirs(self.root_path)
-        os.makedirs(os.path.dirname(self.pid_path))
 
     def status(self):
         pid = self.pid()
