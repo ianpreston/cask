@@ -8,8 +8,9 @@ Like Docker's native driver, Cask essentially works by calling `clone()` to crea
 
 ## Usage
 
-Start up an existing container:
+Create a container and start it up:
 
+    $ sudo cask create --default example
     $ sudo cask start example
 
 Attach a shell to that container and run a listen server:
