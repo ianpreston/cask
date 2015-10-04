@@ -13,6 +13,25 @@ cgroup = libcask.group.ContainerGroup('/data/cask/group')
 def group():
     pass
 
+@group.command('ls')
+def ls():
+    list_format = '{name:<32} {status:<7} {pid:<7} {ipaddr:<16}'
+
+    print list_format.format(
+        name='Container Name',
+        status='Status',
+        pid='PID',
+        ipaddr='IP Address',
+    )
+
+    for container in cgroup.containers.values():
+        print list_format.format(
+            name=container.name,
+            status='up' if container.status() else 'down',
+            pid=container.pid() or '',
+            ipaddr=container.ipaddr,
+        )
+
 
 @group.command('create')
 @click.argument('container')
@@ -28,6 +47,7 @@ def create(container, default=False):
         subprocess.check_call([
             'tar', '-xvf', tgz_path, '-C', cont.root_path,
         ])
+
 
 @group.command('start')
 @click.argument('container')
@@ -45,17 +65,6 @@ def pid(container):
         print 'Container is not running'
         return
     print 'Container is running with PID:', pid
-
-
-@group.command('status')
-@click.argument('container')
-def status(container):
-    cont = cgroup.get(container)
-    if cont.status():
-        pid = cont.pid()
-        print 'Container `{name}` is running with pid {pid}'.format(name=container, pid=pid)
-    else:
-        print 'Container `{name}` is down'.format(name=container)
 
 
 @group.command('kill')
