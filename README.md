@@ -8,21 +8,30 @@ Like Docker's native driver, Cask essentially works by calling `clone()` to crea
 
 ## Usage
 
-Grab the source and build
+Start up an existing container:
+
+    $ sudo cask start example
+
+Attach a shell to that container and run a listen server:
+
+    $ sudo cask shell example
+    / # nc -l -p 1234
+
+## Installation
+
+Make sure you have all the dependencies installed. You'll need a recent version of python, make, curl, and gcc. On Ubuntu you can install all dependencies like this:
+
+    $ sudo apt-get install python2.7 python-setuptools build-essential curl
+
+First, grab the source from Github. Master branch is considered stable.
 
     $ git clone https://github.com/ianpreston/cask
     $ cd cask
+
+Build the binary and install. This part usually takes a few hundred milliseconds.
+
     $ make
-
-Create an example container with Busybox
-
-    $ make container
-
-Start up the container
-
-    $ sudo ./cask ./containers/example ./example.pid /busybox sh
-    /# /busybox hostname
-
+    $ sudo make install
 
 ## License
 
