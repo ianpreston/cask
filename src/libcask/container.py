@@ -6,6 +6,7 @@ import subprocess
 
 import libcask.attach
 import libcask.network
+import libcask.error
 
 
 class Container(libcask.network.SetupNetworkMixin):
@@ -62,22 +63,27 @@ class Container(libcask.network.SetupNetworkMixin):
             return False
 
     def start(self):
+        if self.status():
+            raise libcask.error.AlreadyRunning('Container is already running')
+
         entry = self.entry_point.split(' ')
         args = ['./cask-clone', self.root_path, self.pid_path] + entry
 
         with open('/dev/null', 'rwb') as devnull:
             subprocess.Popen(args, stdin=devnull, stdout=devnull, stderr=devnull)
-
         # TODO - Properly await existence of pidfile. This /sucks/.
         time.sleep(1)
-
-        print 'pid:', self.pid()
 
         self.setup_network()
 
     def get_attachment(self):
+        if not self.status():
+            raise libcask.error.NotRunning('Cannot attach to down container')
         return libcask.attach.Attachment(self.pid())
 
     def kill(self, sig=None):
+        if not self.status():
+            raise libcask.error.NotRunning('Container is already down')
+
         os.kill(self.pid(), sig or signal.SIGKILL)
         os.unlink(self.pid_path)
