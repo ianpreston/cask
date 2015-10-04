@@ -67,7 +67,7 @@ class Container(libcask.network.SetupNetworkMixin):
             raise libcask.error.AlreadyRunning('Container is already running')
 
         entry = self.entry_point.split(' ')
-        args = ['./cask-clone', self.root_path, self.pid_path] + entry
+        args = ['cask-clone', self.root_path, self.pid_path] + entry
 
         with open('/dev/null', 'rwb') as devnull:
             subprocess.Popen(args, stdin=devnull, stdout=devnull, stderr=devnull)
