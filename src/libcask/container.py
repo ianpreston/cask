@@ -5,9 +5,10 @@ import signal
 import subprocess
 
 import libcask.attach
+import libcask.network
 
 
-class Container(object):
+class Container(libcask.network.SetupNetworkMixin):
     def __init__(
         self,
         name,
@@ -34,7 +35,7 @@ class Container(object):
         self.ipaddr = ipaddr
 
         # IP Address of the host's end of the virtual ethernet pair
-        self.ipaddr_host = ipaddr
+        self.ipaddr_host = ipaddr_host
 
         # Command to run in the new container
         self.entry_point = entry_point
@@ -71,6 +72,8 @@ class Container(object):
         time.sleep(1)
 
         print 'pid:', self.pid()
+
+        self.setup_network()
 
     def attach(self):
         return libcask.attach.Attachment(self.pid())
