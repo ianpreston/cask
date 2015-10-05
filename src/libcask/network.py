@@ -7,23 +7,31 @@ class SetupNetworkMixin(object):
             subprocess.check_call(['hostname', self.hostname])
 
     def _setup_virtual_ethernet(self):
-        # Setup virtual ethernet interface on the host
-        # TODO - Need to allocate virtual interface names to containers!
+        veth_name = 'veth-{hostname}'.format(hostname=self.hostname)
+        veth_host_name = 'hveth-{hostname}'.format(hostname=self.hostname)
+
+        # Create virtual ethernet pair
         subprocess.check_call([
             'ip', 'link', 'add',
-            'name', 'veth0', 'type', 'veth',
-            'peer', 'name', 'veth1', 'netns', str(self.pid())
+            'name', veth_host_name, 'type', 'veth',
+            'peer', 'name', veth_name, 'netns', str(self.pid())
         ])
-        subprocess.check_call([
-            'ifconfig', 'veth0', self.ipaddr_host, 'up',
-        ])
+
+        # Add the container's host IP address and bring the interface up
+        subprocess.check_call(['ip', 'addr', 'add', self.ipaddr_host, 'dev', veth_host_name])
+        subprocess.check_call(['ip', 'link', 'set', veth_host_name, 'up'])
+
+        # Add the host interface to the bridge
+        # Assuming here that `cask0` bridge interface exists. It should
+        # be created and initialized by the Makefile.
+        subprocess.check_call(['ip', 'link', 'set', veth_host_name, 'master', 'cask0'])
 
         # Set up virtual ethernet interface inside the container
         # TODO - Only attach CLONE_NEWNET and use the host's ifconfig, so we're
         # not relying on the container having ifconfig.
         with self.get_attachment().attach():
             subprocess.check_call([
-                'ifconfig', 'veth1', self.ipaddr, 'up',
+                'ifconfig', veth_name, self.ipaddr, 'up',
             ])
 
     def setup_network(self):
