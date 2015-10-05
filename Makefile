@@ -14,6 +14,11 @@ $(CLONE_TARGET): $(BUILD_DIR) $(CLONE_SRC)
 libcask:
 	python setup.py install
 
+network:
+	ip link add name cask0 type bridge
+	ip link set cask0 up
+	ip route add 10.18.66.0/24 dev cask0 proto kernel scope link
+
 install: $(CLONE_TARGET) libcask $(DATA_DIRS)
 	cp $(CLONE_TARGET) /usr/local/bin
 
@@ -26,4 +31,7 @@ $(DATA_DIRS):
 clean:
 	rm -fr $(BUILD_DIR)
 
-.PHONY: libcask install clean
+clean-network:
+	ip link del cask0
+
+.PHONY: libcask install network clean clean-network

@@ -33,6 +33,7 @@ Build the binary and install. This part usually takes a few hundred milliseconds
 
     $ make
     $ sudo make install
+    $ sudo make network
 
 ## License
 
