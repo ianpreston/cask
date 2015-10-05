@@ -27,6 +27,7 @@ class ContainerGroup(object):
             'name': container.name,
             'hostname': container.hostname,
             'ipaddr': container.ipaddr,
+            'ipaddr_host': container.ipaddr_host,
             'entry_point': container.entry_point,
         }
         container_json = json.dumps(container_dict)
@@ -42,7 +43,6 @@ class ContainerGroup(object):
         kwargs.update({
             'root_path': os.path.join(self.parent_root_path, name),
             'pid_path': os.path.join(self.parent_pid_path, name),
-            'ipaddr_host': '10.1.1.2',
         })
 
         return libcask.container.Container(**kwargs)
@@ -58,17 +58,26 @@ class ContainerGroup(object):
             all_containers[n] = container
         return all_containers
 
+    def _find_unused_addr(self, fmt, existing):
+        pool = set(fmt.format(x) for x in range(1, 256))
+        pool -= set(existing)
+        return pool.pop()
+
     def create(self, name):
         if self.containers.get(name):
             raise libcask.error.AlreadyExists('Container with that name already exists', name)
+
+        # Find new free IP addresses
+        ipaddr = self._find_unused_addr('10.18.66.{}', [c.ipaddr for c in self.containers.values()])
+        ipaddr_host = self._find_unused_addr('10.18.67.{}', [c.ipaddr_host for c in self.containers.values()])
 
         container = libcask.container.Container(
             name=name,
             root_path=os.path.join(self.parent_root_path, name),
             pid_path=os.path.join(self.parent_pid_path, name),
             hostname=name,
-            ipaddr='10.1.1.1',
-            ipaddr_host='10.1.1.2',
+            ipaddr=ipaddr,
+            ipaddr_host=ipaddr_host,
             entry_point='/busybox sh /entry.sh',
         )
 
