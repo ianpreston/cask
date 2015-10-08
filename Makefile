@@ -8,6 +8,9 @@ BUILD_DIR=build
 CLONE_TARGET=$(BUILD_DIR)/cask-clone
 CLONE_SRC=$(wildcard src/cask-clone/*.c)
 
+BRIDGE_NAME=cask0
+BRIDGE_NETWORK=10.18.66.0/24
+
 $(CLONE_TARGET): $(BUILD_DIR) $(CLONE_SRC)
 	$(CC) --std=$(CSTD) -o $(CLONE_TARGET) $(CLONE_SRC) $(CCFLAGS)
 
@@ -15,9 +18,9 @@ libcask:
 	python setup.py install
 
 network:
-	ip link add name cask0 type bridge
-	ip link set cask0 up
-	ip route add 10.18.66.0/24 dev cask0 proto kernel scope link
+	ip link add name $(BRIDGE_NAME) type bridge
+	ip link set $(BRIDGE_NAME) up
+	ip route add $(BRIDGE_NETWORK) dev $(BRIDGE_NAME) proto kernel scope link
 
 install: $(CLONE_TARGET) libcask $(DATA_DIRS)
 	cp $(CLONE_TARGET) /usr/local/bin
