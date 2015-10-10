@@ -17,6 +17,9 @@ class ContainerGroup(object):
         # Path to directory holding container pid files
         self.parent_pid_path = '/data/cask/pid'
 
+        # Path to the directory holding container log files
+        self.parent_log_path = '/data/cask/log'
+
         self.containers = self._deserialize_all()
 
     def _container_data_path(self, name):
@@ -43,6 +46,7 @@ class ContainerGroup(object):
         kwargs.update({
             'root_path': os.path.join(self.parent_root_path, name),
             'pid_path': os.path.join(self.parent_pid_path, name),
+            'log_path': os.path.join(self.parent_log_path, name),
         })
 
         return libcask.container.Container(**kwargs)

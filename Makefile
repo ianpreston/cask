@@ -2,7 +2,7 @@ CC=gcc
 CSTD=c99
 CCFLAGS=-Wall -Werror -pedantic
 
-DATA_DIRS=/data/cask/group /data/cask/container /data/cask/pid
+DATA_DIRS=/data/cask/group /data/cask/container /data/cask/pid /data/cask/log
 
 BUILD_DIR=build
 CLONE_TARGET=$(BUILD_DIR)/cask-clone

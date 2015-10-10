@@ -16,6 +16,7 @@ class Container(libcask.network.SetupNetworkMixin):
         name,
         root_path,
         pid_path,
+        log_path,
         hostname,
         ipaddr,
         ipaddr_host,
@@ -29,6 +30,9 @@ class Container(libcask.network.SetupNetworkMixin):
 
         # Path to the pidfile of the container
         self.pid_path = pid_path
+
+        # Path to the logfile of the container
+        self.log_path = log_path
 
         # Hostname of the container
         self.hostname = hostname
@@ -73,7 +77,9 @@ class Container(libcask.network.SetupNetworkMixin):
         args = ['cask-clone', self.root_path, self.pid_path] + entry
 
         with open('/dev/null', 'rwb') as devnull:
-            subprocess.Popen(args, stdin=devnull, stdout=devnull, stderr=devnull)
+            with open(self.log_path, 'wb') as logf:
+                subprocess.Popen(args, stdin=devnull, stdout=logf, stderr=logf)
+
         # TODO - Properly await existence of pidfile. This /sucks/.
         time.sleep(1)
 
