@@ -1,40 +1,43 @@
 # cask
 
-Cask is a Linux container management tool, like Docker. With Cask, you create lightweight "containers" (which are actually just directories). These containers run in their own set of [kernel namespaces](http://man7.org/linux/man-pages/man7/namespaces.7.html), effectively isolated from the rest of the system and from eachother.
+Cask is a Linux container system, like Docker and LXC. Cask creates lightweight isolated environments in which to run programs. Programs running in a container have their own isolated filesystem, network, etc. Cask containers are not VMs, though -- they share the host's kernel.
 
-Like Docker's native driver, Cask essentially works by calling `clone()` to create a new set of namespaces for your process.
+Under the hood, Cask works like Docker's native driver: by using `clone()` to create a new set of [kernel namespaces](http://man7.org/linux/man-pages/man7/namespaces.7.html).
 
-**Cask is not designed for running untrusted code.** If you wouldn't run it as root, don't run it in a Cask container!
+**Never use containers to run untrusted code!** If you wouldn't run it on the host, don't run it in Cask.
 
-## Usage
+## Getting Started
 
-Create a container and start it up:
+Create a new container with a default filesystem:
 
     $ sudo cask create --default example
+
+Then start it up:
+
     $ sudo cask start example
 
-Attach a shell to that container and run a listen server:
+Once the container is running, you can open a shell into it like so:
 
     $ sudo cask shell example
-    / # nc -l -p 1234
+
+For additional usage details, see the help text:
+
+    $ cask --help
 
 ## Installation
 
-Make sure you have all the dependencies installed. You'll need a recent version of python, make, curl, and gcc. On Ubuntu you can install all dependencies like this:
-
+First, install Cask's dependencies. On a recent Ubuntu, dependencies can be installed like so:
+ 
     $ sudo apt-get install python2.7 python-setuptools build-essential curl
 
-First, grab the source from Github. Master branch is considered stable.
+Clone the latest stable release of Cask:
 
     $ git clone https://github.com/ianpreston/cask
     $ cd cask
 
-Build the binary and install. This part usually takes a few hundred milliseconds.
+Build and install all of the components:
 
     $ make
     $ sudo make install
     $ sudo make network
 
-## License
-
-(c) 2015 Ian Preston. Available under the [MIT License](https://opensource.org/licenses/MIT).
