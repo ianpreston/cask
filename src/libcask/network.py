@@ -3,7 +3,7 @@ import subprocess
 
 class SetupNetworkMixin(object):
     def _setup_hostname(self):
-        with self.get_attachment().attach():
+        with self.get_attachment(['uts']).attach():
             subprocess.check_call(['hostname', self.hostname])
 
     def _setup_virtual_ethernet(self):
