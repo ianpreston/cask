@@ -85,10 +85,10 @@ class Container(libcask.network.SetupNetworkMixin):
 
         self.setup_network()
 
-    def get_attachment(self):
+    def get_attachment(self, namespaces=None):
         if not self.status():
             raise libcask.error.NotRunning('Cannot attach to down container')
-        return libcask.attach.Attachment(self.pid())
+        return libcask.attach.Attachment(self.pid(), namespaces)
 
     def kill(self, sig=None):
         if not self.status():

@@ -14,7 +14,8 @@ NAMESPACES = [
 
 
 class Attachment(object):
-    def __init__(self, container_pid):
+    def __init__(self, container_pid, namespaces=None):
+        self.namespaces = namespaces or NAMESPACES
         self.libc = ctypes.CDLL('libc.so.6', use_errno=True)
 
         host_pid = os.getpid()
@@ -31,7 +32,10 @@ class Attachment(object):
             self._attach_namespace(ns)
 
     def _open_all(self, pid):
-        for ns in NAMESPACES:
+        for ns in self.namespaces:
+            if ns not in NAMESPACES:
+                raise Exception('Invalid namespace', ns)
+
             ns_path = '/proc/{pid}/ns/{ns}'.format(
                 pid=pid,
                 ns=ns,
