@@ -79,6 +79,7 @@ class ContainerGroup(object):
             name=name,
             root_path=os.path.join(self.parent_root_path, name),
             pid_path=os.path.join(self.parent_pid_path, name),
+            log_path=os.path.join(self.parent_log_path, name),
             hostname=name,
             ipaddr=ipaddr,
             ipaddr_host=ipaddr_host,
