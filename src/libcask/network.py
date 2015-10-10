@@ -27,9 +27,7 @@ class SetupNetworkMixin(object):
         subprocess.check_call(['ip', 'link', 'set', veth_host_name, 'master', 'cask0'])
 
         # Set up virtual ethernet interface inside the container
-        # TODO - Only attach CLONE_NEWNET and use the host's ifconfig, so we're
-        # not relying on the container having ifconfig.
-        with self.get_attachment().attach():
+        with self.get_attachment(['net', 'uts']).attach():
             subprocess.check_call([
                 'ifconfig', veth_name, self.ipaddr, 'up',
             ])
