@@ -2,6 +2,7 @@ import os
 import os.path
 import time
 import signal
+import shutil
 import subprocess
 
 import libcask.attach
@@ -50,6 +51,9 @@ class Container(libcask.network.SetupNetworkMixin):
 
     def create(self):
         os.makedirs(self.root_path)
+
+    def destroy(self):
+        shutil.rmtree(self.root_path)
 
     def status(self):
         pid = self.pid()

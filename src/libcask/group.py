@@ -88,6 +88,14 @@ class ContainerGroup(object):
 
         return container
 
+    def destroy(self, name):
+        container = self.get(name)
+        container.destroy()
+
+        del self.containers[name]
+
+        os.unlink(self._container_data_path(name))
+
     def get(self, name):
         try:
             return self.containers[name]
