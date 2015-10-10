@@ -83,6 +83,17 @@ def shell(container):
         subprocess.call('sh')
 
 
+@group.command('tail')
+@click.option('-f', is_flag=True)
+@click.argument('container')
+def tail(container, f):
+    cont = cgroup.get(container)
+    if f:
+        subprocess.call(['tail', '-f', cont.log_path])
+    else:
+        subprocess.call(['tail', cont.log_path])
+
+
 @group.command('destroy')
 @click.argument('container')
 def destroy(container):
