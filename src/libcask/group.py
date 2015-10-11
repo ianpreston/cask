@@ -65,10 +65,7 @@ class ContainerGroup(object):
         pool -= set(existing)
         return pool.pop()
 
-    def create(self, name):
-        if self.containers.get(name):
-            raise libcask.error.AlreadyExists('Container with that name already exists', name)
-
+    def _create_container(self, name):
         # Find new free IP addresses
         ipaddr = self._find_unused_addr('10.18.66.{}', [c.ipaddr for c in self.containers.values()])
         ipaddr_host = self._find_unused_addr('10.18.67.{}', [c.ipaddr_host for c in self.containers.values()])
@@ -85,6 +82,13 @@ class ContainerGroup(object):
         )
 
         container.create()
+        return container
+
+    def create(self, name):
+        if self.containers.get(name):
+            raise libcask.error.AlreadyExists('Container with that name already exists', name)
+
+        container = self._create_container(name)
 
         self.containers[name] = container
         self._serialize(container)
