@@ -57,6 +57,9 @@ class Container(libcask.network.SetupNetworkMixin):
         os.makedirs(self.root_path)
 
     def destroy(self):
+        if self.status():
+            raise libcask.error.AlreadyRunning('Cannot destroy a running container')
+
         shutil.rmtree(self.root_path)
 
     def status(self):

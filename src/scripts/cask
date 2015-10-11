@@ -97,11 +97,6 @@ def tail(container, f):
 @group.command('destroy')
 @click.argument('container')
 def destroy(container):
-    cont = cgroup.get(container)
-    if cont.status():
-        print 'Container is running. Please stop it first'
-        return
-
     cgroup.destroy(container)
 
 if __name__ == '__main__':
