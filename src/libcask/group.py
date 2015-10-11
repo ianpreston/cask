@@ -28,6 +28,9 @@ class ContainerGroup(object):
     def _serialize(self, container):
         container_dict = {
             'name': container.name,
+            'root_path': container.root_path,
+            'pid_path': container.pid_path,
+            'log_path': container.log_path,
             'hostname': container.hostname,
             'ipaddr': container.ipaddr,
             'ipaddr_host': container.ipaddr_host,
@@ -43,11 +46,6 @@ class ContainerGroup(object):
             container_json = f.read()
 
         kwargs = json.loads(container_json)
-        kwargs.update({
-            'root_path': os.path.join(self.parent_root_path, name),
-            'pid_path': os.path.join(self.parent_pid_path, name),
-            'log_path': os.path.join(self.parent_log_path, name),
-        })
 
         return libcask.container.Container(**kwargs)
 
