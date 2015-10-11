@@ -7,8 +7,8 @@ class SetupNetworkMixin(object):
             subprocess.check_call(['hostname', self.hostname])
 
     def _setup_virtual_ethernet(self):
-        veth_name = 'veth-{hostname}'.format(hostname=self.hostname)
-        veth_host_name = 'hveth-{hostname}'.format(hostname=self.hostname)
+        veth_name = 'veth-{name}'.format(name=self.name)
+        veth_host_name = 'hveth-{name}'.format(name=self.name)
 
         # Create virtual ethernet pair
         subprocess.check_call([
