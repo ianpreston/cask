@@ -1,8 +1,9 @@
-import json
 import os
 import os.path
+import json
 
 import libcask.container
+import libcask.export
 import libcask.error
 
 
@@ -91,6 +92,26 @@ class ContainerGroup(object):
         container = self._create_container(name)
 
         self.containers[name] = container
+        self._serialize(container)
+
+        return container
+
+    def export(self, name, export_filename):
+        container = self.get(name)
+
+        exp = libcask.export.ContainerExport(container, export_filename)
+        exp.export_to_file()
+
+    def importc(self, name, export_filename):
+        if self.containers.get(name):
+            raise libcask.error.AlreadyExists('Container with that name already exists', name)
+
+        container = self._create_container(name)
+
+        imp = libcask.export.ContainerExport(container, export_filename)
+        imp.import_from_file()
+
+        self.containers[container.name] = container
         self._serialize(container)
 
         return container
