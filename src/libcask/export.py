@@ -69,4 +69,4 @@ class ContainerExport(object):
 
     def _import_root(self):
         os.rmdir(self.container.root_path)
-        shutil.copytree(self.root_path, self.container.root_path, symlinks=True)
+        os.rename(self.root_path, self.container.root_path)
