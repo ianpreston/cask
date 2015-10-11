@@ -13,6 +13,7 @@ cgroup = libcask.group.ContainerGroup('/data/cask/group')
 def group():
     pass
 
+
 @group.command('ls')
 def ls():
     list_format = '{name:<32} {status:<7} {pid:<7} {ipaddr:<16}'
@@ -98,6 +99,21 @@ def tail(container, f):
 @click.argument('container')
 def destroy(container):
     cgroup.destroy(container)
+
+
+@group.command('export')
+@click.argument('container')
+@click.argument('filename')
+def export(container, filename):
+    cgroup.export(container, filename)
+
+
+@group.command('import')
+@click.argument('container')
+@click.argument('filename')
+def importc(container, filename):
+    cgroup.importc(container, filename)
+
 
 if __name__ == '__main__':
     group()
