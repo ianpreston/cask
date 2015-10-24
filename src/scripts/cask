@@ -39,18 +39,14 @@ def ls():
 
 @group.command('create')
 @click.argument('container')
-@click.option('--default', is_flag=True)
-def create(container, default=False):
+@click.argument('image', default=None)
+def create(container, image):
     cont = cgroup.create(container)
 
-    if default:
-        tgz_path = os.path.join(cont.root_path, 'default.tar.gz')
-        subprocess.check_call([
-            'curl', '-L', '-o', tgz_path, 'https://ianpreston.io/cask/images/default.tar.gz',
-        ])
-        subprocess.check_call([
-            'tar', '-xvf', tgz_path, '-C', cont.root_path,
-        ])
+    if image:
+        igroup.unfreeze(image, cont)
+
+    print 'Created container', cont.name
 
 
 @group.command('freeze')
@@ -59,14 +55,6 @@ def create(container, default=False):
 def freeze(container, image):
     cont = cgroup.get(container)
     igroup.freeze(image, cont)
-
-
-@group.command('unfreeze')
-@click.argument('image')
-@click.argument('container')
-def create(image, container):
-    cont = cgroup.create(container)
-    igroup.unfreeze(image, cont)
 
 
 @group.command('start')

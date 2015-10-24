@@ -8,9 +8,9 @@ Under the hood, Cask works like Docker's native driver: by using `clone()` to cr
 
 ## Getting Started
 
-Create a new container with a default filesystem:
+Create a new container named `example` from the `default` image:
 
-    $ sudo cask create --default example
+    $ sudo cask create example default
 
 Then start it up:
 
@@ -40,4 +40,3 @@ Build and install all of the components:
     $ make
     $ sudo make install
     $ sudo make network
-
