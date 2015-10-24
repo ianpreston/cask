@@ -146,6 +146,20 @@ def image_ls():
         )
 
 
+@group.command('image.export')
+@click.argument('image')
+@click.argument('export_filename')
+def image_export(image, export_filename):
+    igroup.export_to(image, export_filename) 
+
+
+@group.command('image.import')
+@click.argument('import_filename')
+@click.argument('image')
+def image_import(import_filename, image):
+    igroup.import_from(image, import_filename) 
+
+
 @group.command('image.destroy')
 @click.argument('image')
 def image_destroy(image):

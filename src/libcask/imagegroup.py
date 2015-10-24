@@ -35,6 +35,24 @@ class ImageGroup(object):
         image.unfreeze_to(container)
         return image
 
+    def export_to(self, name, export_filename):
+        image = self.images.get(name)
+        if not image:
+            raise libcask.error.NoSuchImage('Image does not exist', name)
+
+        image.export_to(export_filename)
+
+    def import_from(self, name, import_filename):
+        if self.images.get(name):
+            raise libcask.error.AlreadyExists('Image already exists', name)
+
+        image = self._create_image(name)
+        image.import_from(import_filename)
+
+        self.images[image.name] = image
+        self._serialize_all()
+        return image
+
     def destroy(self, name):
         image = self.images.get(name)
         if not image:
