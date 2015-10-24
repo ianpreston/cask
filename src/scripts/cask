@@ -133,5 +133,11 @@ def image_ls():
         )
 
 
+@group.command('image.destroy')
+@click.argument('image')
+def image_destroy(image):
+    igroup.destroy(image)
+
+
 if __name__ == '__main__':
     group()

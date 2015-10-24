@@ -34,6 +34,13 @@ class ImageGroup(object):
         image.unfreeze_to(container)
         return image
 
+    def destroy(self, name):
+        if not self.images.get(name):
+            raise libcask.error.NoSuchImage('Image does not exist', name)
+
+        del self.images[name]
+        self._serialize_all()
+
     def _create_image(self, name):
         kwargs = {
             'name': name,
