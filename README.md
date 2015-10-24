@@ -6,23 +6,20 @@ Under the hood, Cask works like Docker's native driver: by using `clone()` to cr
 
 **Never use containers to run untrusted code!** If you wouldn't run it on the host, don't run it in Cask.
 
-## Getting Started
+## Quickstart
 
-Create a new container named `example` from the `default` image:
+Download the `default` image and import it:
 
-    $ sudo cask create example default
+    $ wget https://ianpreston.io/cask/images/default.tar.gz
+    $ cask image.import default.tar.gz default
 
-Then start it up:
+Create a new container called `example` from the `default` image and start it up:
 
-    $ sudo cask start example
+    $ cask create example default
 
-Once the container is running, you can open a shell into it like so:
+Open a shell inside the new container:
 
-    $ sudo cask run example sh
-
-For additional usage details, see the help text:
-
-    $ cask --help
+    $ cask run example sh
 
 ## Installation
 
