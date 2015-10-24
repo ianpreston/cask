@@ -16,6 +16,12 @@ class ImageGroup(object):
 
         self.images = dict(self._deserialize_all())
 
+    def get(self, name):
+        try:
+            return self.images[name]
+        except KeyError:
+            raise libcask.error.NoSuchImage('Image does not exist', name)
+
     def freeze(self, name, container):
         if self.images.get(name):
             raise libcask.error.AlreadyExists('Image already exists', name)
@@ -26,21 +32,6 @@ class ImageGroup(object):
         self.images[image.name] = image
         self._serialize_all()
         return image
-
-    def unfreeze(self, name, container):
-        image = self.images.get(name)
-        if not image:
-            raise libcask.error.NoSuchImage('Image does not exist', name)
-
-        image.unfreeze_to(container)
-        return image
-
-    def export_to(self, name, export_filename):
-        image = self.images.get(name)
-        if not image:
-            raise libcask.error.NoSuchImage('Image does not exist', name)
-
-        image.export_to(export_filename)
 
     def import_from(self, name, import_filename):
         if self.images.get(name):
@@ -53,10 +44,18 @@ class ImageGroup(object):
         self._serialize_all()
         return image
 
+    def unfreeze(self, name, container):
+        image = self.get(name)
+        image.unfreeze_to(container)
+        return image
+
+    def export_to(self, name, export_filename):
+        image = self.get(name)
+        image.export_to(export_filename)
+        return image
+
     def destroy(self, name):
-        image = self.images.get(name)
-        if not image:
-            raise libcask.error.NoSuchImage('Image does not exist', name)
+        image = self.get(name)
 
         shutil.rmtree(image.path)
 
