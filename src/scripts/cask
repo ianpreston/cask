@@ -4,9 +4,11 @@ import os.path
 import click
 
 import libcask.group
+import libcask.imagegroup
 
 
 cgroup = libcask.group.ContainerGroup('/data/cask/group/containers.json')
+igroup = libcask.imagegroup.ImageGroup('/data/cask/group/images.json')
 
 
 @click.group()
@@ -48,6 +50,22 @@ def create(container, default=False):
         subprocess.check_call([
             'tar', '-xvf', tgz_path, '-C', cont.root_path,
         ])
+
+
+@group.command('freeze')
+@click.argument('container')
+@click.argument('image')
+def freeze(container, image):
+    cont = cgroup.get(container)
+    igroup.freeze(image, cont)
+
+
+@group.command('unfreeze')
+@click.argument('image')
+@click.argument('container')
+def create(image, container):
+    cont = cgroup.create(container)
+    igroup.unfreeze(image, cont)
 
 
 @group.command('start')
@@ -101,18 +119,18 @@ def destroy(container):
     cgroup.destroy(container)
 
 
-@group.command('export')
-@click.argument('container')
-@click.argument('filename')
-def export(container, filename):
-    cgroup.export(container, filename)
+@group.command('image.ls')
+def image_ls():
+    list_format = '{name:<32}'
 
+    print list_format.format(
+        name='Image Name',
+    )
 
-@group.command('import')
-@click.argument('container')
-@click.argument('filename')
-def importc(container, filename):
-    cgroup.importc(container, filename)
+    for image in igroup.images.values():
+        print list_format.format(
+            name=image.name,
+        )
 
 
 if __name__ == '__main__':
