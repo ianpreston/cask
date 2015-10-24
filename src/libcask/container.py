@@ -91,12 +91,11 @@ class Container(libcask.network.SetupNetworkMixin):
     def copy_file(self, host_path, container_path):
         # HACK - Ensure `container_path` is relative, i.e. transform
         # "/etc/hosts" -> "etc/hosts"
-        container_path = container_path.strip('/')
+        dest = container_path.strip('/')
+        dest = os.path.join(self.root_path, dest)
 
-        shutil.copyfile(
-            host_path,
-            os.path.join(self.root_path, container_path),
-        )
+        shutil.copyfile(host_path, dest)
+        shutil.copystat(host_path, dest)
 
     def get_attachment(self, namespaces=None):
         if not self.status():
