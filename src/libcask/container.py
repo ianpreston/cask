@@ -2,6 +2,7 @@ import os
 import os.path
 import time
 import signal
+import shlex
 import shutil
 import subprocess
 
@@ -76,7 +77,7 @@ class Container(libcask.network.SetupNetworkMixin):
         if self.status():
             raise libcask.error.AlreadyRunning('Container is already running')
 
-        entry = self.entry_point.split(' ')
+        entry = shlex.split(self.entry_point)
         args = ['cask-clone', self.root_path, self.pid_path] + entry
 
         with open('/dev/null', 'rwb') as devnull:
