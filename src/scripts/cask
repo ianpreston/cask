@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 import subprocess
 import os.path
+import shlex
 import click
 
 import libcask.containergroup
@@ -103,12 +104,15 @@ def copy(container, host_path, container_path):
     cont.copy_file(host_path, container_path)
 
 
-@group.command('shell')
+@group.command('run')
 @click.argument('container')
-def shell(container):
+@click.argument('command')
+def run(container, command):
     cont = cgroup.get(container)
+    command = shlex.split(command)
+
     with cont.get_attachment().attach():
-        subprocess.call('sh')
+        subprocess.call(command)
 
 
 @group.command('tail')

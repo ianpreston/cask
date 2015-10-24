@@ -18,7 +18,7 @@ Then start it up:
 
 Once the container is running, you can open a shell into it like so:
 
-    $ sudo cask shell example
+    $ sudo cask run example sh
 
 For additional usage details, see the help text:
 
