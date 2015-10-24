@@ -40,11 +40,17 @@ def ls():
 @group.command('create')
 @click.argument('container')
 @click.argument('image', default=None)
-def create(container, image):
+@click.option('--entrypoint', default=None)
+@click.option('--ip', default=None)
+def create(container, image, entrypoint, ip):
     cont = cgroup.create(container)
 
     if image:
         igroup.unfreeze(image, cont)
+    if entrypoint:
+        cgroup.set_attribute(container, 'entrypoint', entrypoint)
+    if ip:
+        cgroup.set_attribute(container, 'ip', ip)
 
     print 'Created container', cont.name
 
