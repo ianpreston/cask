@@ -7,7 +7,7 @@ import libcask.error
 
 class ImageGroup(object):
     def __init__(self, data_path):
-        # Directory where serialized Images are stored
+        # Path to data file where serialized Images are stored
         self.data_path = data_path
 
         # Path to directory holding image root directories

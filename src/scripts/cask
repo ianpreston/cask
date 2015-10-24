@@ -3,11 +3,11 @@ import subprocess
 import os.path
 import click
 
-import libcask.group
+import libcask.containergroup
 import libcask.imagegroup
 
 
-cgroup = libcask.group.ContainerGroup('/data/cask/group/containers.json')
+cgroup = libcask.containergroup.ContainerGroup('/data/cask/group/containers.json')
 igroup = libcask.imagegroup.ImageGroup('/data/cask/group/images.json')
 
 
