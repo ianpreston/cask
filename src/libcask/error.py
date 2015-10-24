@@ -16,3 +16,7 @@ class AlreadyExists(ContainerError):
 
 class NoSuchContainer(ContainerError):
     pass
+
+
+class NoSuchImage(ContainerError):
+    pass
