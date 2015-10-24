@@ -10,8 +10,7 @@ Under the hood, Cask works like Docker's native driver: by using `clone()` to cr
 
 Download the `default` image and import it:
 
-    $ wget https://ianpreston.io/cask/images/default.tar.gz
-    $ cask image.import default.tar.gz default
+    $ cask image.import https://ianpreston.io/cask/images/default.tar.gz default
 
 Create a new container called `example` from the `default` image and start it up:
 

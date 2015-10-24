@@ -1,7 +1,10 @@
 #!/usr/bin/env python
 import subprocess
+import urlparse
+import tempfile
 import os.path
 import shlex
+import requests
 import click
 
 import libcask.containergroup
@@ -159,6 +162,19 @@ def image_export(image, export_filename):
 @click.argument('import_filename')
 @click.argument('image')
 def image_import(import_filename, image):
+    if urlparse.urlsplit(import_filename).scheme.startswith('http'):
+        print 'Intepreting', import_filename, 'as URL'
+        _, temp_path = tempfile.mkstemp()
+
+        r = requests.get(import_filename, stream=True)
+        r.raise_for_status()
+        with open(temp_path, 'wb') as f:
+            for chunk in r.iter_content(1024):
+                f.write(chunk)
+ 
+        igroup.import_from(image, temp_path)
+        return
+
     igroup.import_from(image, import_filename) 
 
 

@@ -9,6 +9,7 @@ setup(
     url='https://github.com/ianpreston/cask',
     install_requires=[
         'click==5.1',
+        'requests==2.8.1',
     ],
     package_dir={
         '': 'src',
