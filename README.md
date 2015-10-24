@@ -16,6 +16,7 @@ Download the `default` image and import it:
 Create a new container called `example` from the `default` image and start it up:
 
     $ cask create example default
+    $ cask start example
 
 Open a shell inside the new container:
 
