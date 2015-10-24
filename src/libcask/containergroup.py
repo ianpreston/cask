@@ -38,8 +38,7 @@ class ContainerGroup(object):
         container.destroy()
 
         del self.containers[name]
-
-        os.unlink(self._container_data_path(name))
+        self._serialize_all()
 
     def get(self, name):
         try:
