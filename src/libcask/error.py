@@ -14,6 +14,10 @@ class AlreadyExists(ContainerError):
     pass
 
 
+class AttributeInvalid(ContainerError):
+    pass
+
+
 class NoSuchContainer(ContainerError):
     pass
 

@@ -1,6 +1,7 @@
 import os
 import os.path
 import json
+import socket
 
 import libcask.container
 import libcask.error
@@ -32,6 +33,25 @@ class ContainerGroup(object):
         self._serialize_all()
 
         return container
+
+    def set_attribute(self, name, attr_name, attr_value):
+        container = self.get(name)
+
+        if container.status():
+            raise libcask.error.AlreadyRunning('Cannot set attribute of running container')
+
+        try:
+            setters = {
+                'entrypoint': self._attr_setter_entrypoint,
+                'ip': self._attr_setter_ip,
+            }
+            setter = setters[attr_name]
+        except KeyError:
+            raise libcask.error.AttributeInvalid('Unknown attribute', attr_name)
+
+        setter(container, attr_value)
+
+        self._serialize_all()
 
     def destroy(self, name):
         container = self.get(name)
@@ -69,6 +89,21 @@ class ContainerGroup(object):
         pool = set(fmt.format(x) for x in range(1, 256))
         pool -= set(existing)
         return pool.pop()
+
+    def _attr_setter_ip(self, container, new_ip):
+        existing_ips = [c.ipaddr for c in self.containers.values()]
+        if new_ip in existing_ips:
+            raise libcask.error.AttributeInvalid('IP Address already in use', new_ip)
+
+        try:
+            socket.inet_aton(new_ip)
+        except socket.error:
+            raise libcask.error.AttributeInvalid('IP Address is not valid', new_ip)
+
+        container.ipaddr = new_ip
+
+    def _attr_setter_entrypoint(self, container, new_entry_point):
+        container.entry_point = new_entry_point
 
     def _serialize(self, container):
         return {
