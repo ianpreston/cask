@@ -1,4 +1,5 @@
 import json
+import shutil
 import os.path
 
 import libcask.image
@@ -35,8 +36,11 @@ class ImageGroup(object):
         return image
 
     def destroy(self, name):
-        if not self.images.get(name):
+        image = self.images.get(name)
+        if not image:
             raise libcask.error.NoSuchImage('Image does not exist', name)
+
+        shutil.rmtree(image.path)
 
         del self.images[name]
         self._serialize_all()
