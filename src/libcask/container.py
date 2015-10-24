@@ -88,6 +88,16 @@ class Container(libcask.network.SetupNetworkMixin):
 
         self.setup_network()
 
+    def copy_file(self, host_path, container_path):
+        # HACK - Ensure `container_path` is relative, i.e. transform
+        # "/etc/hosts" -> "etc/hosts"
+        container_path = container_path.strip('/')
+
+        shutil.copyfile(
+            host_path,
+            os.path.join(self.root_path, container_path),
+        )
+
     def get_attachment(self, namespaces=None):
         if not self.status():
             raise libcask.error.NotRunning('Cannot attach to down container')

@@ -94,6 +94,15 @@ def kill(container):
     print 'Container killed'
 
 
+@group.command('copy')
+@click.argument('container')
+@click.argument('host_path')
+@click.argument('container_path')
+def copy(container, host_path, container_path):
+    cont = cgroup.get(container)
+    cont.copy_file(host_path, container_path)
+
+
 @group.command('shell')
 @click.argument('container')
 def shell(container):
