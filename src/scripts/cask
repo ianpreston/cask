@@ -6,7 +6,7 @@ import click
 import libcask.group
 
 
-cgroup = libcask.group.ContainerGroup('/data/cask/group')
+cgroup = libcask.group.ContainerGroup('/data/cask/group/containers.json')
 
 
 @click.group()

@@ -21,13 +21,10 @@ class ContainerGroup(object):
         # Path to the directory holding container log files
         self.parent_log_path = '/data/cask/log'
 
-        self.containers = self._deserialize_all()
-
-    def _container_data_path(self, name):
-        return os.path.join(self.data_path, name + '.json')
+        self.containers = dict(self._deserialize_all())
 
     def _serialize(self, container):
-        container_dict = {
+        return {
             'name': container.name,
             'root_path': container.root_path,
             'pid_path': container.pid_path,
@@ -37,29 +34,25 @@ class ContainerGroup(object):
             'ipaddr_host': container.ipaddr_host,
             'entry_point': container.entry_point,
         }
-        container_json = json.dumps(container_dict)
 
-        with open(self._container_data_path(container.name), 'w') as f:
-            f.write(container_json)
+    def _serialize_all(self):
+        containers_ser = [self._serialize(c) for c in self.containers.values()]
+        containers_ser = {'containers': containers_ser}
+        containers_ser = json.dumps(containers_ser)
 
-    def _deserialize(self, name):
-        with open(self._container_data_path(name), 'r') as f:
-            container_json = f.read()
-
-        kwargs = json.loads(container_json)
-
-        return libcask.container.Container(**kwargs)
+        with open(self.data_path, 'w') as f:
+            f.write(containers_ser)
 
     def _deserialize_all(self):
-        # Get names of all containers
-        container_names = os.listdir(self.data_path)
-        container_names = [n.replace('.json', '') for n in container_names]
+        try:
+            with open(self.data_path, 'r') as f:
+                containers_ser = json.loads(f.read())
+        except IOError:
+            return
 
-        all_containers = {}
-        for n in container_names:
-            container = self._deserialize(n)
-            all_containers[n] = container
-        return all_containers
+        for container_ser in containers_ser['containers']:
+            container = libcask.container.Container(**container_ser)
+            yield (container.name, container)
 
     def _find_unused_addr(self, fmt, existing):
         pool = set(fmt.format(x) for x in range(1, 256))
@@ -92,7 +85,7 @@ class ContainerGroup(object):
         container = self._create_container(name)
 
         self.containers[name] = container
-        self._serialize(container)
+        self._serialize_all()
 
         return container
 
