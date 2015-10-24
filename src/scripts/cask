@@ -83,6 +83,14 @@ def kill(container):
     print 'Container killed'
 
 
+@group.command('set')
+@click.argument('container')
+@click.argument('name')
+@click.argument('value')
+def container_set(container, name, value):
+    cgroup.set_attribute(container, name, value)
+
+
 @group.command('copy')
 @click.argument('container')
 @click.argument('host_path')
