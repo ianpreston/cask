@@ -159,9 +159,9 @@ def image_export(image, export_filename):
 
 
 @group.command('image.import')
-@click.argument('import_filename')
 @click.argument('image')
-def image_import(import_filename, image):
+@click.argument('import_filename')
+def image_import(image, import_filename):
     if urlparse.urlsplit(import_filename).scheme.startswith('http'):
         print 'Intepreting', import_filename, 'as URL'
         _, temp_path = tempfile.mkstemp()
