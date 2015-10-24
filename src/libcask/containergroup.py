@@ -79,7 +79,7 @@ class ContainerGroup(object):
             hostname=name,
             ipaddr=ipaddr,
             ipaddr_host=ipaddr_host,
-            entry_point='/busybox-i686 yes',
+            entry_point='/busybox-i686 sleep 86400',
         )
 
         container.create()
