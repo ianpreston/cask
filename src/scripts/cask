@@ -22,6 +22,7 @@ def group():
 
 @group.command('ls')
 def ls():
+    """List containers"""
     list_format = '{name:<32} {status:<7} {pid:<7} {ipaddr:<16}'
 
     print list_format.format(
@@ -46,6 +47,7 @@ def ls():
 @click.option('--entrypoint', default=None)
 @click.option('--ip', default=None)
 def create(container, image, entrypoint, ip):
+    """Create a new container from an image"""
     cont = cgroup.create(container)
 
     if image:
@@ -62,6 +64,7 @@ def create(container, image, entrypoint, ip):
 @click.argument('container')
 @click.argument('image')
 def freeze(container, image):
+    """Freeze a container's state to an image"""
     cont = cgroup.get(container)
     igroup.freeze(image, cont)
 
@@ -69,6 +72,7 @@ def freeze(container, image):
 @group.command('start')
 @click.argument('container')
 def start(container):
+    """Start up a stopped container"""
     cont = cgroup.get(container)
     cont.start()
 
@@ -76,6 +80,7 @@ def start(container):
 @group.command('pid')
 @click.argument('container')
 def pid(container):
+    """Show the host PID of a running container"""
     cont = cgroup.get(container)
     pid = cont.pid()
     if not pid:
@@ -87,6 +92,7 @@ def pid(container):
 @group.command('kill')
 @click.argument('container')
 def kill(container):
+    """Send a signal to a running container"""
     cont = cgroup.get(container)
     cont.kill()
     print 'Container killed'
@@ -97,6 +103,7 @@ def kill(container):
 @click.argument('name')
 @click.argument('value')
 def container_set(container, name, value):
+    """Set an attribute of a container"""
     cgroup.set_attribute(container, name, value)
 
 
@@ -105,6 +112,7 @@ def container_set(container, name, value):
 @click.argument('host_path')
 @click.argument('container_path')
 def copy(container, host_path, container_path):
+    """Copy a file from host to container filesystem"""
     cont = cgroup.get(container)
     cont.copy_file(host_path, container_path)
 
@@ -113,6 +121,7 @@ def copy(container, host_path, container_path):
 @click.argument('container')
 @click.argument('command')
 def run(container, command):
+    """Run a command within a running container"""
     cont = cgroup.get(container)
     command = shlex.split(command)
 
@@ -124,6 +133,7 @@ def run(container, command):
 @click.option('-f', is_flag=True)
 @click.argument('container')
 def tail(container, f):
+    """Show container logs"""
     cont = cgroup.get(container)
     if f:
         subprocess.call(['tail', '-f', cont.log_path])
@@ -134,11 +144,13 @@ def tail(container, f):
 @group.command('destroy')
 @click.argument('container')
 def destroy(container):
+    """Completely destroy a container"""
     cgroup.destroy(container)
 
 
 @group.command('image.ls')
 def image_ls():
+    """List available images"""
     list_format = '{name:<32}'
 
     print list_format.format(
@@ -155,6 +167,7 @@ def image_ls():
 @click.argument('image')
 @click.argument('export_filename')
 def image_export(image, export_filename):
+    """Export an image to an archive file"""
     igroup.export_to(image, export_filename) 
 
 
@@ -162,6 +175,7 @@ def image_export(image, export_filename):
 @click.argument('image')
 @click.argument('import_filename')
 def image_import(image, import_filename):
+    """Import an image from an archive file or URL"""
     if urlparse.urlsplit(import_filename).scheme.startswith('http'):
         print 'Intepreting', import_filename, 'as URL'
         _, temp_path = tempfile.mkstemp()
@@ -181,6 +195,7 @@ def image_import(image, import_filename):
 @group.command('image.destroy')
 @click.argument('image')
 def image_destroy(image):
+    """Completely destroy an image"""
     igroup.destroy(image)
 
 
