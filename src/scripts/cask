@@ -42,7 +42,7 @@ def ls():
 
 @group.command('create')
 @click.argument('container')
-@click.argument('image', default=None)
+@click.argument('image', required=False, default=None)
 @click.option('--entrypoint', default=None)
 @click.option('--ip', default=None)
 def create(container, image, entrypoint, ip):
