@@ -24,3 +24,7 @@ class NoSuchContainer(ContainerError):
 
 class NoSuchImage(ContainerError):
     pass
+
+
+class InvalidImage(ContainerError):
+    pass
