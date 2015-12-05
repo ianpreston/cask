@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 import subprocess
+import functools
 import urlparse
 import tempfile
 import os.path
@@ -9,10 +10,25 @@ import click
 
 import libcask.containergroup
 import libcask.imagegroup
+import libcask.error
 
 
 cgroup = libcask.containergroup.ContainerGroup('/data/cask/group/containers.json')
 igroup = libcask.imagegroup.ImageGroup('/data/cask/group/images.json')
+
+
+def pretty_errors(f):
+    @functools.wraps(f)
+    def wrapper(*args, **kwargs):
+        try:
+            return f(*args, **kwargs)
+        except libcask.error.ContainerError, e:
+            error_fmt = 'Error ({error_type}): {error_msg}'
+            error_type = type(e).__name__
+            error_msg = '; '.join(e.args)
+
+            print error_fmt.format(error_type=error_type, error_msg=error_msg)
+    return wrapper
 
 
 @click.group()
@@ -21,6 +37,7 @@ def group():
 
 
 @group.command('ls')
+@pretty_errors
 def ls():
     """List containers"""
     list_format = '{name:<32} {status:<7} {pid:<7} {ipaddr:<16}'
@@ -46,6 +63,7 @@ def ls():
 @click.argument('image', required=False, default=None)
 @click.option('--entrypoint', default=None)
 @click.option('--ip', default=None)
+@pretty_errors
 def create(container, image, entrypoint, ip):
     """Create a new container from an image"""
     cont = cgroup.create(container)
@@ -63,6 +81,7 @@ def create(container, image, entrypoint, ip):
 @group.command('freeze')
 @click.argument('container')
 @click.argument('image')
+@pretty_errors
 def freeze(container, image):
     """Freeze a container's state to an image"""
     cont = cgroup.get(container)
@@ -71,6 +90,7 @@ def freeze(container, image):
 
 @group.command('start')
 @click.argument('container')
+@pretty_errors
 def start(container):
     """Start up a stopped container"""
     cont = cgroup.get(container)
@@ -79,6 +99,7 @@ def start(container):
 
 @group.command('pid')
 @click.argument('container')
+@pretty_errors
 def pid(container):
     """Show the host PID of a running container"""
     cont = cgroup.get(container)
@@ -91,6 +112,7 @@ def pid(container):
 
 @group.command('kill')
 @click.argument('container')
+@pretty_errors
 def kill(container):
     """Send a signal to a running container"""
     cont = cgroup.get(container)
@@ -102,6 +124,7 @@ def kill(container):
 @click.argument('container')
 @click.argument('name')
 @click.argument('value')
+@pretty_errors
 def container_set(container, name, value):
     """Set an attribute of a container"""
     cgroup.set_attribute(container, name, value)
@@ -111,6 +134,7 @@ def container_set(container, name, value):
 @click.argument('container')
 @click.argument('host_path')
 @click.argument('container_path')
+@pretty_errors
 def copy(container, host_path, container_path):
     """Copy a file from host to container filesystem"""
     cont = cgroup.get(container)
@@ -120,6 +144,7 @@ def copy(container, host_path, container_path):
 @group.command('run')
 @click.argument('container')
 @click.argument('command')
+@pretty_errors
 def run(container, command):
     """Run a command within a running container"""
     cont = cgroup.get(container)
@@ -132,6 +157,7 @@ def run(container, command):
 @group.command('tail')
 @click.option('-f', is_flag=True)
 @click.argument('container')
+@pretty_errors
 def tail(container, f):
     """Show container logs"""
     cont = cgroup.get(container)
@@ -143,12 +169,14 @@ def tail(container, f):
 
 @group.command('destroy')
 @click.argument('container')
+@pretty_errors
 def destroy(container):
     """Completely destroy a container"""
     cgroup.destroy(container)
 
 
 @group.command('image.ls')
+@pretty_errors
 def image_ls():
     """List available images"""
     list_format = '{name:<32}'
@@ -166,6 +194,7 @@ def image_ls():
 @group.command('image.export')
 @click.argument('image')
 @click.argument('export_filename')
+@pretty_errors
 def image_export(image, export_filename):
     """Export an image to an archive file"""
     igroup.export_to(image, export_filename) 
@@ -174,6 +203,7 @@ def image_export(image, export_filename):
 @group.command('image.import')
 @click.argument('image')
 @click.argument('import_filename')
+@pretty_errors
 def image_import(image, import_filename):
     """Import an image from an archive file or URL"""
     if urlparse.urlsplit(import_filename).scheme.startswith('http'):
